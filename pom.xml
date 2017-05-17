@@ -28,6 +28,7 @@
   </parent>
 
   <artifactId>uberfire-extensions</artifactId>
+  <version>0.9.0.csc-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Extensions to UberFire</name>
