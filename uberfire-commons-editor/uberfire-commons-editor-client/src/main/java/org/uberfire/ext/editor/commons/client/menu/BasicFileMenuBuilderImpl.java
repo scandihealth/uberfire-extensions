@@ -39,9 +39,7 @@ import org.uberfire.ext.editor.commons.client.file.RenamePopup;
 import org.uberfire.ext.editor.commons.client.file.RenamePopupView;
 import org.uberfire.ext.editor.commons.client.resources.i18n.CommonConstants;
 import org.uberfire.ext.editor.commons.client.validation.Validator;
-import org.uberfire.ext.editor.commons.service.support.SupportsCopy;
-import org.uberfire.ext.editor.commons.service.support.SupportsDelete;
-import org.uberfire.ext.editor.commons.service.support.SupportsRename;
+import org.uberfire.ext.editor.commons.service.support.*;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.mvp.Command;
@@ -74,6 +72,14 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
     private Command copyCommand = null;
     private Command validateCommand = null;
     private Command restoreCommand = null;
+    private Command deleteDraftCommand = null;
+    private MenuItem deleteDraftMenuItem;
+    private Command moveToProductionCommand = null;
+    private MenuItem moveToProductionMenuItem;
+    private Command archiveCommand = null;
+    private MenuItem archiveMenuItem = null;
+    private MenuItem simulateMenuItem = null;
+    private Command simulateCommand = null;
     private MenuItem restoreMenuItem;
     private List<Pair<String, Command>> otherCommands = new ArrayList<Pair<String, Command>>();
     private List<MenuItem> topLevelMenus = new ArrayList<MenuItem>();
@@ -361,6 +367,50 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
                     .build().getItems().get( 0 ) );
         }
 
+        if(deleteDraftCommand != null) {
+            menuItems.put(MenuItems.DELETEDRAFT,
+                    MenuFactory.newTopLevelMenu(CommonConstants.INSTANCE.DeleteDraft())
+                            .respondsWith(deleteDraftCommand)
+                            .endMenu()
+                            .build().getItems().get(0));
+        } else if ( deleteDraftMenuItem != null ) {
+            menuItems.put( MenuItems.DELETEDRAFT, deleteDraftMenuItem );
+            menuItemsSyncedWithLockState.add( deleteDraftMenuItem );
+        }
+
+        if(moveToProductionCommand != null) {
+            menuItems.put(MenuItems.MOVETOPRODUCTION,
+                    MenuFactory.newTopLevelMenu(CommonConstants.INSTANCE.MoveToProduction())
+                            .respondsWith(moveToProductionCommand)
+                            .endMenu()
+                            .build().getItems().get(0));
+        } else if ( moveToProductionMenuItem != null ) {
+            menuItems.put( MenuItems.MOVETOPRODUCTION, moveToProductionMenuItem );
+            menuItemsSyncedWithLockState.add( moveToProductionMenuItem );
+        }
+
+        if(archiveCommand != null) {
+            menuItems.put(MenuItems.ARCHIVE,
+                    MenuFactory.newTopLevelMenu(CommonConstants.INSTANCE.Archive())
+                            .respondsWith(archiveCommand)
+                            .endMenu()
+                            .build().getItems().get(0));
+        } else if ( archiveMenuItem != null ) {
+            menuItems.put( MenuItems.ARCHIVE, archiveMenuItem );
+            menuItemsSyncedWithLockState.add( archiveMenuItem );
+        }
+
+        if(simulateCommand != null) {
+            menuItems.put(MenuItems.SIMULATE,
+                    MenuFactory.newTopLevelMenu(CommonConstants.INSTANCE.Simulate())
+                            .respondsWith(simulateCommand)
+                            .endMenu()
+                            .build().getItems().get(0));
+        } else if ( simulateMenuItem != null ) {
+            menuItems.put( MenuItems.SIMULATE, simulateMenuItem );
+            menuItemsSyncedWithLockState.add( simulateMenuItem );
+        }
+
         if ( validateCommand != null ) {
             menuItems.put( MenuItems.VALIDATE, MenuFactory.newTopLevelMenu( CommonConstants.INSTANCE.Validate() )
                     .respondsWith( validateCommand )
@@ -433,6 +483,119 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
     public BasicFileMenuBuilder addNewTopLevelMenu( MenuItem menu ) {
         topLevelMenus.add( menu );
         return this;
+    }
+
+    @Override
+    public BasicFileMenuBuilder addDeleteDraft(Command command) {
+        deleteDraftCommand = command;
+        return this;
+    }
+
+    @Override
+    public BasicFileMenuBuilder addMoveToProduction(Command command) {
+        moveToProductionCommand = command;
+        return this;
+    }
+
+    @Override
+    public BasicFileMenuBuilder addArchive(Command command) {
+        archiveCommand = command;
+        return this;
+    }
+
+    @Override
+    public BasicFileMenuBuilder addSimulate(Command command) {
+        simulateCommand = command;
+        return this;
+    }
+
+    @Override
+    public BasicFileMenuBuilder addDeleteDraft(Path path) {
+        return null;
+    }
+
+    @Override
+    public BasicFileMenuBuilder addDeleteDraft(MenuItem menu, final Path path, final Caller<? extends SupportsDelete> deleteDraftCaller) {
+        deleteDraftMenuItem = menu;
+        return addDeleteDraft( new Command() {
+            @Override
+            public void execute() {
+                final DeletePopup popup = new DeletePopup( new ParameterizedCommand<String>() {
+                    @Override
+                    public void execute( final String comment ) {
+                        busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.Deleting() );
+                        deleteDraftCaller.call( getDeleteSuccessCallback(),
+                                new HasBusyIndicatorDefaultErrorCallback( busyIndicatorView ) ).delete( path,
+                                comment );
+                    }
+                } );
+
+                popup.show();
+            }
+        } );
+    }
+
+    @Override
+    public BasicFileMenuBuilder addMoveToProduction(MenuItem menu, final Path path, final Caller<? extends SupportsMoveToProduction> moveToProctionCaller) {
+        moveToProductionMenuItem = menu;
+        return addMoveToProduction( new Command() {
+            @Override
+            public void execute() {
+                final DeletePopup popup = new DeletePopup( new ParameterizedCommand<String>() {
+                    @Override
+                    public void execute( final String comment ) {
+                        busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.MoveToProduction() );
+                        moveToProctionCaller.call( getDeleteSuccessCallback(),
+                                new HasBusyIndicatorDefaultErrorCallback( busyIndicatorView ) ).moveToProduction( path,
+                                comment );
+                    }
+                } );
+
+                popup.show();
+            }
+        } );
+    }
+
+    @Override
+    public BasicFileMenuBuilder addArchive( final MenuItem menu, final Path path, final Caller<? extends SupportsArchive> archiveCaller ) {
+        archiveMenuItem = menu;
+        return addArchive( new Command() {
+            @Override
+            public void execute() {
+                final DeletePopup popup = new DeletePopup( new ParameterizedCommand<String>() {
+                    @Override
+                    public void execute( final String comment ) {
+                        busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.Archive() );
+                        archiveCaller.call( getDeleteSuccessCallback(),
+                                new HasBusyIndicatorDefaultErrorCallback( busyIndicatorView ) ).archive( path,
+                                comment );
+                    }
+                } );
+
+                popup.show();
+            }
+        } );
+    }
+
+    @Override
+    public BasicFileMenuBuilder addSimulate( final MenuItem menu, final Path path, final Caller<? extends SupportsSimulate> simulateCaller ) {
+        simulateMenuItem = menu;
+        return addSimulate( new Command() {
+            @Override
+            public void execute() {
+                final DeletePopup popup = new DeletePopup( new ParameterizedCommand<String>() {
+                    @Override
+                    public void execute( final String comment ) {
+                        busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.Simulate() );
+                        simulateCaller.call( getDeleteSuccessCallback(),
+                                new HasBusyIndicatorDefaultErrorCallback( busyIndicatorView ) ).simulate( path,
+                                comment );
+                    }
+                } );
+
+                popup.show();
+            }
+        } );
     }
 
     private void onEditorLockInfo( @Observes UpdatedLockStatusEvent lockInfo ) {

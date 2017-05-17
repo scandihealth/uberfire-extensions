@@ -65,6 +65,14 @@ public interface CommonConstants
 
     String Copy();
 
+    String DeleteDraft();
+
+    String MoveToProduction();
+
+    String Archive();
+
+    String Simulate();
+
     String Validate();
 
     String Restore();
