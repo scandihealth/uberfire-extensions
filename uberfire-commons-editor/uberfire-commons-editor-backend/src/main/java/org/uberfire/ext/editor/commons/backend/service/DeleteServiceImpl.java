@@ -16,12 +16,7 @@
 
 package org.uberfire.ext.editor.commons.backend.service;
 
-import java.util.Collection;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.dxc.drools.log.annotation.DroolsLoggingToDB;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.slf4j.Logger;
@@ -35,6 +30,12 @@ import org.uberfire.io.IOService;
 import org.uberfire.java.nio.base.options.CommentedOption;
 import org.uberfire.java.nio.file.StandardDeleteOption;
 import org.uberfire.rpc.SessionInfo;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Collection;
 
 @Service
 @ApplicationScoped
@@ -55,6 +56,7 @@ public class DeleteServiceImpl implements DeleteService {
     @Inject
     private Instance<DeleteRestrictor> deleteRestrictorBeans;
 
+    @DroolsLoggingToDB
     @Override
     public void delete( final Path path,
                         final String comment ) {
@@ -70,6 +72,7 @@ public class DeleteServiceImpl implements DeleteService {
         }
     }
 
+    @DroolsLoggingToDB
     @Override
     public void deleteIfExists( final Collection<Path> paths,
                                 final String comment ) {

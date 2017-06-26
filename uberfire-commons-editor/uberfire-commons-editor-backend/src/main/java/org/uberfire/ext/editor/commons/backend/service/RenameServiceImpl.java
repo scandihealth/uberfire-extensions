@@ -16,12 +16,7 @@
 
 package org.uberfire.ext.editor.commons.backend.service;
 
-import java.util.Collection;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.dxc.drools.log.annotation.DroolsLoggingToDB;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.slf4j.Logger;
@@ -34,9 +29,14 @@ import org.uberfire.ext.editor.commons.service.restriction.PathOperationRestrict
 import org.uberfire.ext.editor.commons.service.restrictor.RenameRestrictor;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.base.options.CommentedOption;
-import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.rpc.SessionInfo;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Collection;
 
 @Service
 @ApplicationScoped
@@ -59,7 +59,8 @@ public class RenameServiceImpl implements RenameService {
 
     @Inject
     private Instance<RenameRestrictor> renameRestrictorBeans;
-    
+
+    @DroolsLoggingToDB
     @Override
     public Path rename( final Path path,
                         final String newName,
@@ -75,6 +76,7 @@ public class RenameServiceImpl implements RenameService {
         }
     }
 
+    @DroolsLoggingToDB
     @Override
     public void renameIfExists( final Collection<Path> paths,
                                 final String newName,

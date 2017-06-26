@@ -16,13 +16,7 @@
 
 package org.uberfire.ext.editor.commons.backend.service;
 
-import java.util.Collection;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import com.dxc.drools.log.annotation.DroolsLoggingToDB;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.slf4j.Logger;
@@ -35,11 +29,17 @@ import org.uberfire.ext.editor.commons.service.restriction.PathOperationRestrict
 import org.uberfire.ext.editor.commons.service.restrictor.CopyRestrictor;
 import org.uberfire.io.IOService;
 import org.uberfire.java.nio.base.options.CommentedOption;
-import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.rpc.impl.SessionInfoImpl;
 import org.uberfire.workbench.events.ResourceCopiedEvent;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.Collection;
 
 @Service
 @ApplicationScoped
@@ -66,6 +66,7 @@ public class CopyServiceImpl implements CopyService {
     @Inject
     private Instance<CopyRestrictor> copyRestrictorBeans;
 
+    @DroolsLoggingToDB
     @Override
     public Path copy( final Path path,
                       final String newName,
@@ -83,6 +84,7 @@ public class CopyServiceImpl implements CopyService {
         }
     }
 
+    @DroolsLoggingToDB
     @Override
     public void copyIfExists( final Collection<Path> paths,
                               final String newName,
