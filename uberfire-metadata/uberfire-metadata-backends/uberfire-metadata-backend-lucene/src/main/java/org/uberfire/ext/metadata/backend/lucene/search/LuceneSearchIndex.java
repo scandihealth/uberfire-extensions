@@ -179,8 +179,6 @@ public class LuceneSearchIndex implements SearchIndex {
                 for ( String value : (String[]) entry.getValue() ) {
                     query.add( new WildcardQuery( new Term( entry.getKey(), value ) ), MUST );
                 }
-            } else if ( entry.getValue() instanceof Enum ) {
-                query.add( new TermQuery( new Term( entry.getKey(), entry.getValue().toString() ) ), MUST );
             } else if ( entry.getValue() instanceof Boolean ) {
                 query.add( new TermQuery( new Term( entry.getKey(), ( (Boolean) entry.getValue() ) ? "0" : "1" ) ), MUST );
             }
