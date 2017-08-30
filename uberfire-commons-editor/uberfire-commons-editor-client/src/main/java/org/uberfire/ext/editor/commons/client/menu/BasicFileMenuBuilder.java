@@ -18,7 +18,12 @@ package org.uberfire.ext.editor.commons.client.menu;
 import org.jboss.errai.common.client.api.Caller;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.editor.commons.client.validation.Validator;
-import org.uberfire.ext.editor.commons.service.support.*;
+import org.uberfire.ext.editor.commons.service.support.SupportsArchive;
+import org.uberfire.ext.editor.commons.service.support.SupportsCopy;
+import org.uberfire.ext.editor.commons.service.support.SupportsDelete;
+import org.uberfire.ext.editor.commons.service.support.SupportsMoveToProduction;
+import org.uberfire.ext.editor.commons.service.support.SupportsRename;
+import org.uberfire.ext.editor.commons.service.support.SupportsSimulate;
 import org.uberfire.mvp.Command;
 import org.uberfire.workbench.model.menu.MenuItem;
 import org.uberfire.workbench.model.menu.Menus;
@@ -62,12 +67,6 @@ public interface BasicFileMenuBuilder {
                                      final Command command );
 
     BasicFileMenuBuilder addNewTopLevelMenu( final MenuItem menu );
-
-    BasicFileMenuBuilder addDeleteDraft( final Command command );
-
-    BasicFileMenuBuilder addDeleteDraft( final Path path );
-
-    BasicFileMenuBuilder addDeleteDraft( final MenuItem menu, final Path path, final Caller<? extends SupportsDelete> deleteDraftCaller );
 
     BasicFileMenuBuilder addMoveToProduction( final MenuItem menu, final Path path, final Caller<? extends SupportsMoveToProduction> moveToProctionCaller );
 

@@ -39,7 +39,12 @@ import org.uberfire.ext.editor.commons.client.file.RenamePopup;
 import org.uberfire.ext.editor.commons.client.file.RenamePopupView;
 import org.uberfire.ext.editor.commons.client.resources.i18n.CommonConstants;
 import org.uberfire.ext.editor.commons.client.validation.Validator;
-import org.uberfire.ext.editor.commons.service.support.*;
+import org.uberfire.ext.editor.commons.service.support.SupportsArchive;
+import org.uberfire.ext.editor.commons.service.support.SupportsCopy;
+import org.uberfire.ext.editor.commons.service.support.SupportsDelete;
+import org.uberfire.ext.editor.commons.service.support.SupportsMoveToProduction;
+import org.uberfire.ext.editor.commons.service.support.SupportsRename;
+import org.uberfire.ext.editor.commons.service.support.SupportsSimulate;
 import org.uberfire.ext.widgets.common.client.callbacks.HasBusyIndicatorDefaultErrorCallback;
 import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.mvp.Command;
@@ -72,8 +77,6 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
     private Command copyCommand = null;
     private Command validateCommand = null;
     private Command restoreCommand = null;
-    private Command deleteDraftCommand = null;
-    private MenuItem deleteDraftMenuItem;
     private Command moveToProductionCommand = null;
     private MenuItem moveToProductionMenuItem;
     private Command archiveCommand = null;
@@ -367,17 +370,6 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
                     .build().getItems().get( 0 ) );
         }
 
-        if(deleteDraftCommand != null) {
-            menuItems.put(MenuItems.DELETEDRAFT,
-                    MenuFactory.newTopLevelMenu(CommonConstants.INSTANCE.DeleteDraft())
-                            .respondsWith(deleteDraftCommand)
-                            .endMenu()
-                            .build().getItems().get(0));
-        } else if ( deleteDraftMenuItem != null ) {
-            menuItems.put( MenuItems.DELETEDRAFT, deleteDraftMenuItem );
-            menuItemsSyncedWithLockState.add( deleteDraftMenuItem );
-        }
-
         if(moveToProductionCommand != null) {
             menuItems.put(MenuItems.MOVETOPRODUCTION,
                     MenuFactory.newTopLevelMenu(CommonConstants.INSTANCE.MoveToProduction())
@@ -486,12 +478,6 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
     }
 
     @Override
-    public BasicFileMenuBuilder addDeleteDraft(Command command) {
-        deleteDraftCommand = command;
-        return this;
-    }
-
-    @Override
     public BasicFileMenuBuilder addMoveToProduction(Command command) {
         moveToProductionCommand = command;
         return this;
@@ -507,32 +493,6 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
     public BasicFileMenuBuilder addSimulate(Command command) {
         simulateCommand = command;
         return this;
-    }
-
-    @Override
-    public BasicFileMenuBuilder addDeleteDraft(Path path) {
-        return null;
-    }
-
-    @Override
-    public BasicFileMenuBuilder addDeleteDraft(MenuItem menu, final Path path, final Caller<? extends SupportsDelete> deleteDraftCaller) {
-        deleteDraftMenuItem = menu;
-        return addDeleteDraft( new Command() {
-            @Override
-            public void execute() {
-                final DeletePopup popup = new DeletePopup( new ParameterizedCommand<String>() {
-                    @Override
-                    public void execute( final String comment ) {
-                        busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.Deleting() );
-                        deleteDraftCaller.call( getDeleteSuccessCallback(),
-                                new HasBusyIndicatorDefaultErrorCallback( busyIndicatorView ) ).delete( path,
-                                comment );
-                    }
-                } );
-
-                popup.show();
-            }
-        } );
     }
 
     @Override
