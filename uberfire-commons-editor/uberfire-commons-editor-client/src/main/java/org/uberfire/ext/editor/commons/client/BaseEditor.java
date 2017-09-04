@@ -398,6 +398,9 @@ public abstract class BaseEditor {
         disableMenuItem( MenuItems.RENAME );
         disableMenuItem( MenuItems.DELETE );
         disableMenuItem( MenuItems.VALIDATE );
+        disableMenuItem( MenuItems.MOVETOPRODUCTION );
+        disableMenuItem( MenuItems.ARCHIVE );
+        disableMenuItem( MenuItems.SIMULATE );
     }
 
     private void disableMenuItem( final MenuItems menuItem ) {
