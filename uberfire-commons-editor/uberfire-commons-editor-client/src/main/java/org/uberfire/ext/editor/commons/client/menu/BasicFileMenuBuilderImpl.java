@@ -74,9 +74,6 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
     private Command copyCommand = null;
     private Command validateCommand = null;
     private Command restoreCommand = null;
-    private Command moveToProductionCommand = null;
-    private Command archiveCommand = null;
-    private Command simulateCommand = null;
     private MenuItem restoreMenuItem;
     private List<Pair<String, Command>> otherCommands = new ArrayList<Pair<String, Command>>();
     private List<MenuItem> topLevelMenus = new ArrayList<MenuItem>();
@@ -105,8 +102,8 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
                     public void execute( final String comment ) {
                         busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.Deleting() );
                         deleteCaller.call( getDeleteSuccessCallback(),
-                                new HasBusyIndicatorDefaultErrorCallback( busyIndicatorView ) ).delete( path,
-                                comment );
+                                           new HasBusyIndicatorDefaultErrorCallback( busyIndicatorView ) ).delete( path,
+                                                                                                                   comment );
                     }
                 } );
 
@@ -146,7 +143,7 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
             public void execute() {
                 final RenamePopupView renamePopupView = RenamePopup.getDefaultView();
                 final RenamePopup popup = new RenamePopup( path,
-                        getRenamePopupCommand( renameCaller, path, renamePopupView ), renamePopupView );
+                                                           getRenamePopupCommand( renameCaller, path, renamePopupView ), renamePopupView );
 
                 popup.show();
             }
@@ -162,8 +159,8 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
             public void execute() {
                 final RenamePopupView renamePopupView = RenamePopup.getDefaultView();
                 final RenamePopup popup = new RenamePopup( path,
-                        validator,
-                        getRenamePopupCommand( renameCaller, path, renamePopupView ), renamePopupView );
+                                                           validator,
+                                                           getRenamePopupCommand( renameCaller, path, renamePopupView ), renamePopupView );
 
                 popup.show();
             }
@@ -178,9 +175,9 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
             public void execute( final FileNameAndCommitMessage details ) {
                 busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.Renaming() );
                 renameCaller.call( getRenameSuccessCallback( renamePopupView ),
-                        getRenameErrorCallback( renamePopupView, busyIndicatorView ) ).rename( path,
-                        details.getNewFileName(),
-                        details.getCommitMessage() );
+                                   getRenameErrorCallback( renamePopupView, busyIndicatorView ) ).rename( path,
+                                                                                                          details.getNewFileName(),
+                                                                                                          details.getCommitMessage() );
             }
         };
     }
@@ -230,7 +227,7 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
             public void execute() {
                 final CopyPopupView copyPopupView = CopyPopup.getDefaultView();
                 final CopyPopup popup = new CopyPopup( path,
-                        getCopyPopupCommand( copyCaller, path, copyPopupView ), copyPopupView );
+                                                       getCopyPopupCommand( copyCaller, path, copyPopupView ), copyPopupView );
                 popup.show();
             }
         } );
@@ -245,8 +242,8 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
             public void execute() {
                 final CopyPopupView copyPopupView = CopyPopup.getDefaultView();
                 final CopyPopup popup = new CopyPopup( path,
-                        validator,
-                        getCopyPopupCommand( copyCaller, path, copyPopupView ), copyPopupView );
+                                                       validator,
+                                                       getCopyPopupCommand( copyCaller, path, copyPopupView ), copyPopupView );
                 popup.show();
             }
         } );
@@ -260,9 +257,9 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
             public void execute( final FileNameAndCommitMessage details ) {
                 busyIndicatorView.showBusyIndicator( CommonConstants.INSTANCE.Copying() );
                 copyCaller.call( getCopySuccessCallback( copyPopupView ),
-                        getCopyErrorCallback( copyPopupView, busyIndicatorView ) ).copy( path,
-                        details.getNewFileName(),
-                        details.getCommitMessage() );
+                                 getCopyErrorCallback( copyPopupView, busyIndicatorView ) ).copy( path,
+                                                                                                  details.getNewFileName(),
+                                                                                                  details.getCommitMessage() );
             }
         };
     }
@@ -318,7 +315,7 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
     public BasicFileMenuBuilder addCommand( final String caption,
                                             final Command command ) {
         this.otherCommands.add( new Pair<String, Command>( caption,
-                command ) );
+                                                           command ) );
         return this;
     }
 
@@ -364,36 +361,6 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
                     .build().getItems().get( 0 ) );
         }
 
-        if ( moveToProductionCommand != null ) {
-            MenuItem moveToProductionMenuItem = MenuFactory.newTopLevelMenu( CommonConstants.INSTANCE.LPRMoveToProduction() )
-                    .respondsWith( moveToProductionCommand )
-                    .endMenu()
-                    .build().getItems().get( 0 );
-
-            menuItems.put( MenuItems.MOVETOPRODUCTION, moveToProductionMenuItem );
-            menuItemsSyncedWithLockState.add( moveToProductionMenuItem );
-        }
-
-        if ( archiveCommand != null ) {
-            MenuItem archiveMenuItem = MenuFactory.newTopLevelMenu( CommonConstants.INSTANCE.LPRArchive() )
-                    .respondsWith( archiveCommand )
-                    .endMenu()
-                    .build().getItems().get( 0 );
-
-            menuItems.put( MenuItems.ARCHIVE, archiveMenuItem );
-            menuItemsSyncedWithLockState.add( archiveMenuItem );
-        }
-
-        if ( simulateCommand != null ) {
-            MenuItem simulateMenuItem = MenuFactory.newTopLevelMenu( CommonConstants.INSTANCE.LPRSimulate() )
-                    .respondsWith( simulateCommand )
-                    .endMenu()
-                    .build().getItems().get( 0 );
-
-            menuItems.put( MenuItems.SIMULATE, simulateMenuItem );
-            menuItemsSyncedWithLockState.add( simulateMenuItem ); //todo do we need to synchronize simulate with lock state?
-        }
-
         if ( validateCommand != null ) {
             menuItems.put( MenuItems.VALIDATE, MenuFactory.newTopLevelMenu( CommonConstants.INSTANCE.Validate() )
                     .respondsWith( validateCommand )
@@ -411,12 +378,12 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
             menuItemsSyncedWithLockState.add( restoreMenuItem );
         }
 
-        if ( !(otherCommands == null || otherCommands.isEmpty()) ) {
+        if ( !( otherCommands == null || otherCommands.isEmpty() ) ) {
             final List<MenuItem> otherMenuItems = new ArrayList<MenuItem>();
             for ( Pair<String, Command> other : otherCommands ) {
                 otherMenuItems.add( newSimpleItem( other.getK1() )
-                        .respondsWith( other.getK2() )
-                        .endMenu().build().getItems().get( 0 ) );
+                                            .respondsWith( other.getK2() )
+                                            .endMenu().build().getItems().get( 0 ) );
             }
             final MenuItem item = MenuFactory.newTopLevelMenu( CommonConstants.INSTANCE.Other() )
                     .withItems( otherMenuItems )
@@ -468,26 +435,8 @@ public class BasicFileMenuBuilderImpl implements BasicFileMenuBuilder {
         return this;
     }
 
-    @Override
-    public BasicFileMenuBuilder addMoveToProduction( Command command ) {
-        moveToProductionCommand = command;
-        return this;
-    }
-
-    @Override
-    public BasicFileMenuBuilder addArchive( Command command ) {
-        archiveCommand = command;
-        return this;
-    }
-
-    @Override
-    public BasicFileMenuBuilder addSimulate( Command command ) {
-        simulateCommand = command;
-        return this;
-    }
-
     private void onEditorLockInfo( @Observes UpdatedLockStatusEvent lockInfo ) {
-        boolean enabled = (!lockInfo.isLocked() || lockInfo.isLockedByCurrentUser());
+        boolean enabled = ( !lockInfo.isLocked() || lockInfo.isLockedByCurrentUser() );
         for ( MenuItem menuItem : menuItemsSyncedWithLockState ) {
             menuItem.setEnabled( enabled );
         }

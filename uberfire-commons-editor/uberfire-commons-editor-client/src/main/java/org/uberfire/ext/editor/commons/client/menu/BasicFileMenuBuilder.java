@@ -65,14 +65,4 @@ public interface BasicFileMenuBuilder {
 
     BasicFileMenuBuilder addNewTopLevelMenu( final MenuItem menu );
 
-    BasicFileMenuBuilder addMoveToProduction(Command command);
-
-    BasicFileMenuBuilder addArchive( Command command );
-
-    BasicFileMenuBuilder addSimulate( Command command );
-
-
-
-
-
 }

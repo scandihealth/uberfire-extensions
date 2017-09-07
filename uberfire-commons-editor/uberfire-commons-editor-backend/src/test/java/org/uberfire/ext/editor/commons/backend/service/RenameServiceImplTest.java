@@ -18,8 +18,10 @@ package org.uberfire.ext.editor.commons.backend.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
+import org.guvnor.common.services.shared.metadata.model.LprMetadataConsts;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,17 +29,18 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.backend.vfs.VFSLockService;
 import org.uberfire.backend.vfs.impl.LockInfo;
+import org.uberfire.ext.editor.commons.backend.service.restriction.LPRRuleStatusRestrictor;
 import org.uberfire.ext.editor.commons.backend.service.restriction.LockRestrictor;
 import org.uberfire.ext.editor.commons.service.ValidationService;
 import org.uberfire.ext.editor.commons.service.restrictor.RenameRestrictor;
 import org.uberfire.io.IOService;
-import org.uberfire.java.nio.file.FileSystem;
 import org.uberfire.rpc.SessionInfo;
 
 import static org.junit.Assert.*;
@@ -71,6 +74,11 @@ public class RenameServiceImplTest {
     @InjectMocks
     private LockRestrictor lockRestrictor;
 
+    @Spy
+    @InjectMocks
+    private LPRRuleStatusRestrictor lprRestrictor;
+
+
     @Before
     public void setup() throws Exception {
         when( identity.getIdentifier() ).thenReturn( "user" );
@@ -81,6 +89,7 @@ public class RenameServiceImplTest {
         doNothing().when( renameService ).endBatch();
 
         List<RenameRestrictor> renameRestrictors = new ArrayList<RenameRestrictor>();
+        renameRestrictors.add( lprRestrictor );
         renameRestrictors.add( lockRestrictor );
         when( renameService.getRenameRestrictors() ).thenReturn( renameRestrictors );
     }
@@ -168,6 +177,41 @@ public class RenameServiceImplTest {
         boolean hasRestriction = whenPathIsCheckedForRenameRestrictions( path );
         thenPathHasRenameRestrictions( hasRestriction );
     }
+
+    @Test
+    public void LPRProductionPathHasRenameRestrictionTest() {
+        final Path path = getPath();
+
+        givenThatPathIsUnlocked( path );
+        givenThatPathIsInProduction( path );
+        boolean hasRestriction = whenPathIsCheckedForRenameRestrictions( path );
+        thenPathHasRenameRestrictions( hasRestriction );
+    }
+
+    @Test
+    public void LPRArchivedPathHasRenameRestrictionTest() {
+        final Path path = getPath();
+
+        givenThatPathIsUnlocked( path );
+        givenThatPathIsArchived( path );
+        boolean hasRestriction = whenPathIsCheckedForRenameRestrictions( path );
+        thenPathHasRenameRestrictions( hasRestriction );
+    }
+
+    private void givenThatPathIsInProduction( Path path ) {
+        when( ioService.readAttributes( Mockito.any( org.uberfire.java.nio.file.Path.class ) ) )
+                .thenReturn( new HashMap<String, Object>() {{
+                    put( LprMetadataConsts.PRODUCTION_DATE, 123L );
+                }} );
+    }
+
+    private void givenThatPathIsArchived( Path path ) {
+        when( ioService.readAttributes( Mockito.any( org.uberfire.java.nio.file.Path.class ) ) )
+                .thenReturn( new HashMap<String, Object>() {{
+                    put( LprMetadataConsts.ARCHIVED_DATE, 123L );
+                }} );
+    }
+
 
     private void givenThatPathIsLocked( final Path path ) {
         changeLockInfo( path, true );

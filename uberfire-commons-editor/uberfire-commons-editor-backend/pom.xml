@@ -31,6 +31,13 @@
   <description>Uberfire Commons Editor Backend</description>
  
   <dependencies>
+    <!-- Required by LPR functionality -->
+    <dependency>
+      <groupId>org.guvnor</groupId>
+      <artifactId>guvnor-services-consts</artifactId>
+    </dependency>
+
+    <!-- dependencies -->
     <dependency>
       <groupId>org.jboss.errai</groupId>
       <artifactId>errai-bus</artifactId>
