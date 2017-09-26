@@ -51,7 +51,7 @@
       <!-- LPR -->
       <dependency>
         <groupId>org.guvnor</groupId>
-        <artifactId>guvnor-services-consts</artifactId>
+        <artifactId>guvnor-lpr-consts</artifactId>
         <version>6.5.0.csc-SNAPSHOT</version>
       </dependency>
 

@@ -34,7 +34,7 @@
     <!-- Required by LPR functionality -->
     <dependency>
       <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-services-consts</artifactId>
+      <artifactId>guvnor-lpr-consts</artifactId>
     </dependency>
 
     <!-- dependencies -->
