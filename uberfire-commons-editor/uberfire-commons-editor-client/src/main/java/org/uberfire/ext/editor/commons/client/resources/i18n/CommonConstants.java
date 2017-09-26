@@ -65,6 +65,12 @@ public interface CommonConstants
 
     String Copy();
 
+    String LPRMoveToProduction();
+
+    String LPRArchive();
+
+    String LPRSimulate();
+
     String Validate();
 
     String Restore();
@@ -115,4 +121,149 @@ public interface CommonConstants
 
     String Select();
 
+    String January();
+
+    String February();
+
+    String March();
+
+    String April();
+
+    String May();
+
+    String June();
+
+    String July();
+
+    String August();
+
+    String October();
+
+    String September();
+
+    String November();
+
+    String December();
+
+    String OK();
+
+    String Edit();
+
+    String InvalidDateFormatMessage();
+
+    String SorryAnItemOfThatNameAlreadyExistsInTheRepositoryPleaseChooseAnother();
+
+    String Error();
+
+    String ShowDetail();
+
+    String Choose();
+
+    String WaitWhileValidating();
+
+    String Wait();
+
+    String File();
+
+    String ValidationErrors();
+
+    String Move();
+
+    String EditTabTitle();
+
+    String SourceTabTitle();
+
+    String MetadataTabTitle();
+
+    String ConfigTabTitle();
+
+    String ItemCreatedSuccessfully();
+
+    String ItemMovedSuccessfully();
+
+    String ItemValidatedSuccessfully();
+
+    String ItemPathSubheading();
+
+    String ItemUndefinedPath();
+
+    String MissingPath();
+
+    String AddAnOptionalCheckInComment();
+
+    String CheckIn();
+
+    String RefreshingList();
+
+    String UnableToLoadList();
+
+    String Name();
+
+    String WholeNumberInteger();
+
+    String TrueOrFalse();
+
+    String Text();
+
+    String DecimalNumber();
+
+    String DeleteItem();
+
+    String RuleAsset();
+
+    String NewItem();
+
+    String New();
+
+    String AElementToDelInCollectionList();
+
+    String AddElementBelow();
+
+    String MoveDownListMove();
+
+    String MoveUpList();
+
+    String NewItemBelow();
+
+    String MoveDown();
+
+    String MoveUp();
+
+    String PleaseSetAName();
+
+    String UploadSuccess();
+
+    String CopyPopupCreateACopyNamePrompt();
+
+    String RenamePopupRenameNamePrompt();
+
+    String NoneSelected();
+
+    String LineNoneLine();
+
+    String UploadSelectAFile();
+
+    String UploadFileTypeNotSupported();
+
+    String UploadGenericError();
+
+    String NoSuchFileTabTitle();
+
+    String NoSuchFileMessage();
+
+    String Overview();
+
+    String Comments();
+
+    String IndexClonedRepositoryWarning();
+
+    String LPRRuleMovedToProductionSuccessfully();
+
+    String LPRMoveToProductionPopupWarning();
+
+    String LPRMoveToProductionPopupConfirm();
+
+    String LPRArchivePopupWarning();
+
+    String LPRArchivePopupConfirm();
 }

@@ -18,8 +18,10 @@ package org.uberfire.ext.editor.commons.backend.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
+import org.guvnor.common.services.shared.metadata.model.LprMetadataConsts;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,12 +29,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.backend.vfs.VFSLockService;
 import org.uberfire.backend.vfs.impl.LockInfo;
+import org.uberfire.ext.editor.commons.backend.service.restriction.LPRRuleStatusRestrictor;
 import org.uberfire.ext.editor.commons.backend.service.restriction.LockRestrictor;
 import org.uberfire.ext.editor.commons.service.ValidationService;
 import org.uberfire.ext.editor.commons.service.restrictor.DeleteRestrictor;
@@ -70,6 +74,10 @@ public class DeleteServiceImplTest {
     @InjectMocks
     private LockRestrictor lockRestrictor;
 
+    @Spy
+    @InjectMocks
+    private LPRRuleStatusRestrictor lprRestrictor;
+
     @Before
     public void setup() {
         when( identity.getIdentifier() ).thenReturn( "user" );
@@ -80,6 +88,7 @@ public class DeleteServiceImplTest {
         doNothing().when( deleteService ).endBatch( Matchers.<Collection<Path>>any() );
 
         List<DeleteRestrictor> deleteRestrictors = new ArrayList<DeleteRestrictor>();
+        deleteRestrictors.add( lprRestrictor );
         deleteRestrictors.add( lockRestrictor );
         when( deleteService.getDeleteRestrictors() ).thenReturn( deleteRestrictors );
     }
@@ -167,6 +176,39 @@ public class DeleteServiceImplTest {
         boolean hasRestriction = whenPathIsCheckedForDeleteRestrictions( path );
         thenPathHasDeleteRestrictions( hasRestriction );
     }
+
+    @Test
+    public void LPRProductionPathHasDeleteRestrictionTest() {
+        final Path path = getPath();
+        givenThatPathIsUnlocked( path );
+        givenThatPathIsInProduction( path );
+        boolean hasRestriction = whenPathIsCheckedForDeleteRestrictions( path );
+        thenPathHasDeleteRestrictions( hasRestriction );
+    }
+
+    @Test
+    public void LPRArchivedPathHasDeleteRestrictionTest() {
+        final Path path = getPath();
+        givenThatPathIsUnlocked( path );
+        givenThatPathIsArchived( path );
+        boolean hasRestriction = whenPathIsCheckedForDeleteRestrictions( path );
+        thenPathHasDeleteRestrictions( hasRestriction );
+    }
+
+    private void givenThatPathIsInProduction( Path path ) {
+        when( ioService.readAttributes( Mockito.any( org.uberfire.java.nio.file.Path.class ) ) )
+                .thenReturn( new HashMap<String, Object>() {{
+                    put( LprMetadataConsts.PRODUCTION_DATE, 123L );
+                }} );
+    }
+
+    private void givenThatPathIsArchived( Path path ) {
+        when( ioService.readAttributes( Mockito.any( org.uberfire.java.nio.file.Path.class ) ) )
+                .thenReturn( new HashMap<String, Object>() {{
+                    put( LprMetadataConsts.ARCHIVED_DATE, 123L );
+                }} );
+    }
+
 
     private void givenThatPathIsLocked( final Path path ) {
         changeLockInfo( path, true );
