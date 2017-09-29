@@ -45,7 +45,7 @@ public class ArchivePopup extends BaseModal {
         warningLabel.setText( CommonConstants.INSTANCE.LPRArchivePopupWarning() );
 
         final GenericModalFooter footer = new GenericModalFooter();
-        footer.addButton( CommonConstants.INSTANCE.OK(),
+        footer.addButton( CommonConstants.INSTANCE.LPRArchive(),
                 new Command() {
                     @Override
                     public void execute() {

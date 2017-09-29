@@ -45,7 +45,7 @@ public class MoveToProductionPopup extends BaseModal {
         warningLabel.setText( CommonConstants.INSTANCE.LPRMoveToProductionPopupWarning() );
 
         final GenericModalFooter footer = new GenericModalFooter();
-        footer.addButton( CommonConstants.INSTANCE.OK(),
+        footer.addButton( CommonConstants.INSTANCE.LPRMoveToProduction(),
                 new Command() {
                     @Override
                     public void execute() {
