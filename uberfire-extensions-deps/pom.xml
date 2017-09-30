@@ -36,7 +36,7 @@
 
   <properties>
     <version.org.jboss.xnio>3.2.0.Final</version.org.jboss.xnio>
-    <version.org.uberfire>0.9.0.Final</version.org.uberfire>
+    <version.org.uberfire>0.9.0.csc-SNAPSHOT</version.org.uberfire>
     <version.com.ahome-it.lienzo-core>2.0.192-RC1</version.com.ahome-it.lienzo-core>
     <!-- Uberfire Security Management. -->
     <version.org.jboss.keycloak>1.4.0.Final</version.org.jboss.keycloak>
