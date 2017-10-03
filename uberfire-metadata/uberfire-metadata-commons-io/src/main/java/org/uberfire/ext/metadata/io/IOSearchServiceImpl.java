@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.search.Sort;
 import org.uberfire.ext.metadata.model.KObject;
 import org.uberfire.ext.metadata.search.ClusterSegment;
 import org.uberfire.ext.metadata.search.IOSearchService;
@@ -51,8 +52,17 @@ public class IOSearchServiceImpl implements IOSearchService {
     public List<Path> searchByAttrs( final Map<String, ?> attrs,
                                      final Filter filter,
                                      final Path... roots ) {
+        return searchByAttrs( attrs, filter, null, roots );
+    }
+
+    @Override
+    public List<Path> searchByAttrs( final Map<String, ?> attrs,
+                                     final Filter filter,
+                                     final Sort sortOrder,
+                                     final Path... roots ) {
         final List<KObject> kObjects = searchIndex.searchByAttrs( attrs,
                                                                   filter,
+                                                                  sortOrder,
                                                                   buildClusterSegments( roots ) );
         return new ArrayList<Path>() {{
             for ( KObject kObject : kObjects ) {

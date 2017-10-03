@@ -19,6 +19,7 @@ package org.uberfire.ext.metadata.search;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.search.Sort;
 import org.uberfire.ext.metadata.model.KObject;
 import org.uberfire.java.nio.file.Path;
 
@@ -26,6 +27,11 @@ public interface IOSearchService {
 
     List<Path> searchByAttrs( final Map<String, ?> attrs,
                               final Filter filter,
+                              final Path... roots );
+
+    List<Path> searchByAttrs( final Map<String, ?> attrs,
+                              final Filter filter,
+                              final Sort sortOrder,
                               final Path... roots );
 
     List<Path> fullTextSearch( final String term,

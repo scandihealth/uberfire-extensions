@@ -19,6 +19,7 @@ package org.uberfire.ext.metadata.search;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.search.Sort;
 import org.uberfire.ext.metadata.model.KObject;
 
 /**
@@ -28,6 +29,11 @@ public interface SearchIndex {
 
     List<KObject> searchByAttrs( final Map<String, ?> attrs,
                                  final IOSearchService.Filter filter,
+                                 final ClusterSegment... clusterSegments );
+
+    List<KObject> searchByAttrs( final Map<String, ?> attrs,
+                                 final IOSearchService.Filter filter,
+                                 final Sort sortOrder,
                                  final ClusterSegment... clusterSegments );
 
     List<KObject> fullTextSearch( final String term,

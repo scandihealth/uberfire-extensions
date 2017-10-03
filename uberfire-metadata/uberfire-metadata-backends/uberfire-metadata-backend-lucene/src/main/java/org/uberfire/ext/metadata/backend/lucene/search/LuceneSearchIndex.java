@@ -28,8 +28,9 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.search.TotalHitCountCollector;
 import org.apache.lucene.search.WildcardQuery;
@@ -59,7 +60,7 @@ public class LuceneSearchIndex implements SearchIndex {
     public LuceneSearchIndex( final LuceneIndexManager indexManager,
                               final Analyzer analyzer ) {
         this.indexManager = checkNotNull( "lucene",
-                                          indexManager );
+                indexManager );
         this.queryParser = new QueryParser( Version.LUCENE_40, FULL_TEXT_FIELD, analyzer );
         this.queryParser.setAllowLeadingWildcard( true );
     }
@@ -68,6 +69,14 @@ public class LuceneSearchIndex implements SearchIndex {
     public List<KObject> searchByAttrs( final Map<String, ?> attrs,
                                         final IOSearchService.Filter filter,
                                         final ClusterSegment... clusterSegments ) {
+        return searchByAttrs( attrs, filter, null, clusterSegments );
+    }
+
+    @Override
+    public List<KObject> searchByAttrs( final Map<String, ?> attrs,
+                                        final IOSearchService.Filter filter,
+                                        final Sort sortOrder,
+                                        final ClusterSegment... clusterSegments ) {
         if ( clusterSegments == null || clusterSegments.length == 0 ) {
             return emptyList();
         }
@@ -75,12 +84,13 @@ public class LuceneSearchIndex implements SearchIndex {
             return emptyList();
         }
         final int totalNumHitsEstimate = searchByAttrsHits( attrs,
-                                                            clusterSegments );
+                clusterSegments );
         return search( buildQuery( attrs,
-                                   clusterSegments ),
-                       totalNumHitsEstimate,
-                       filter,
-                       clusterSegments );
+                clusterSegments ),
+                totalNumHitsEstimate,
+                filter,
+                sortOrder,
+                clusterSegments );
     }
 
     @Override
@@ -91,12 +101,13 @@ public class LuceneSearchIndex implements SearchIndex {
             return emptyList();
         }
         final int totalNumHitsEstimate = fullTextSearchHits( term,
-                                                             clusterSegments );
+                clusterSegments );
         return search( buildQuery( term,
-                                   clusterSegments ),
-                       totalNumHitsEstimate,
-                       filter,
-                       clusterSegments );
+                clusterSegments ),
+                totalNumHitsEstimate,
+                filter,
+                null,
+                clusterSegments );
     }
 
     @Override
@@ -109,8 +120,8 @@ public class LuceneSearchIndex implements SearchIndex {
             return 0;
         }
         return searchHits( buildQuery( attrs,
-                                       clusterSegments ),
-                           clusterSegments );
+                clusterSegments ),
+                clusterSegments );
     }
 
     @Override
@@ -120,8 +131,8 @@ public class LuceneSearchIndex implements SearchIndex {
             return 0;
         }
         return searchHits( buildQuery( term,
-                                       clusterSegments ),
-                           clusterSegments );
+                clusterSegments ),
+                clusterSegments );
     }
 
     private int searchHits( final Query query,
@@ -141,17 +152,23 @@ public class LuceneSearchIndex implements SearchIndex {
     private List<KObject> search( final Query query,
                                   final int totalNumHitsEstimate,
                                   final IOSearchService.Filter filter,
+                                  final Sort sortOrder,
                                   final ClusterSegment... clusterSegments ) {
-        final TopScoreDocCollector collector = TopScoreDocCollector.create( totalNumHitsEstimate,
-                                                                            true );
         final IndexSearcher index = indexManager.getIndexSearcher( clusterSegments );
         final List<KObject> result = new ArrayList<KObject>();
         try {
-            index.search( query,
-                          collector );
-            final ScoreDoc[] hits = collector.topDocs( 0 ).scoreDocs;
-            for ( int i = 0; i < hits.length; i++ ) {
-                final KObject kObject = toKObject( index.doc( hits[ i ].doc ) );
+            TopDocs topDocs;
+            if ( sortOrder != null ) {
+                //use supplied Sort object to order results
+                topDocs = index.search( query, null, totalNumHitsEstimate, sortOrder );
+            } else {
+                //use default sort order (by score)
+                TopScoreDocCollector collector = TopScoreDocCollector.create( totalNumHitsEstimate, true );
+                index.search( query, collector );
+                topDocs = collector.topDocs( 0 );
+            }
+            for ( int i = 0; i < topDocs.scoreDocs.length; i++ ) {
+                final KObject kObject = toKObject( index.doc( topDocs.scoreDocs[i].doc ) );
                 if ( filter.accept( kObject ) ) {
                     result.add( kObject );
                 }
@@ -170,17 +187,17 @@ public class LuceneSearchIndex implements SearchIndex {
         final BooleanQuery query = new BooleanQuery();
         for ( final Map.Entry<String, ?> entry : attrs.entrySet() ) {
             if ( entry.getValue() instanceof DateRange ) {
-                final Long from = ( (DateRange) entry.getValue() ).after().getTime();
-                final Long to = ( (DateRange) entry.getValue() ).before().getTime();
+                final Long from = (( DateRange ) entry.getValue()).after().getTime();
+                final Long to = (( DateRange ) entry.getValue()).before().getTime();
                 query.add( newLongRange( entry.getKey(), from, to, true, true ), MUST );
             } else if ( entry.getValue() instanceof String ) {
                 query.add( new WildcardQuery( new Term( entry.getKey(), entry.getValue().toString() ) ), MUST );
             } else if ( entry.getValue() instanceof String[] ) {
-                for ( String value : (String[]) entry.getValue() ) {
+                for ( String value : ( String[] ) entry.getValue() ) {
                     query.add( new WildcardQuery( new Term( entry.getKey(), value ) ), MUST );
                 }
             } else if ( entry.getValue() instanceof Boolean ) {
-                query.add( new TermQuery( new Term( entry.getKey(), ( (Boolean) entry.getValue() ) ? "0" : "1" ) ), MUST );
+                query.add( new TermQuery( new Term( entry.getKey(), (( Boolean ) entry.getValue()) ? "0" : "1" ) ), MUST );
             }
         }
         return composeQuery( query, clusterSegments );
@@ -210,17 +227,17 @@ public class LuceneSearchIndex implements SearchIndex {
 
         final BooleanQuery booleanQuery = new BooleanQuery();
         booleanQuery.add( query,
-                          MUST );
+                MUST );
 
-        final BooleanClause.Occur occur = ( clusterSegments.length == 1 ? MUST : SHOULD );
+        final BooleanClause.Occur occur = (clusterSegments.length == 1 ? MUST : SHOULD);
         for ( ClusterSegment clusterSegment : clusterSegments ) {
             final BooleanQuery clusterSegmentQuery = new BooleanQuery();
             addClusterIdTerms( clusterSegmentQuery,
-                               clusterSegment );
+                    clusterSegment );
             addSegmentIdTerms( clusterSegmentQuery,
-                               clusterSegment );
+                    clusterSegment );
             booleanQuery.add( clusterSegmentQuery,
-                              occur );
+                    occur );
         }
 
         return booleanQuery;
@@ -230,9 +247,9 @@ public class LuceneSearchIndex implements SearchIndex {
                                     final ClusterSegment clusterSegment ) {
         if ( clusterSegment.getClusterId() != null ) {
             final Query cluster = new TermQuery( new Term( "cluster.id",
-                                                           clusterSegment.getClusterId() ) );
+                    clusterSegment.getClusterId() ) );
             query.add( cluster,
-                       MUST );
+                    MUST );
         }
     }
 
@@ -244,19 +261,19 @@ public class LuceneSearchIndex implements SearchIndex {
 
         if ( clusterSegment.segmentIds().length == 1 ) {
             final Query segment = new TermQuery( new Term( "segment.id",
-                                                           clusterSegment.segmentIds()[ 0 ] ) );
+                    clusterSegment.segmentIds()[0] ) );
             query.add( segment,
-                       MUST );
+                    MUST );
         } else {
             final BooleanQuery segments = new BooleanQuery();
             for ( final String segmentId : clusterSegment.segmentIds() ) {
                 final Query segment = new TermQuery( new Term( "segment.id",
-                                                               segmentId ) );
+                        segmentId ) );
                 segments.add( segment,
-                              SHOULD );
+                        SHOULD );
             }
             query.add( segments,
-                       MUST );
+                    MUST );
         }
     }
 
