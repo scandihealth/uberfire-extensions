@@ -369,7 +369,6 @@ public abstract class BaseEditor {
                 versionRecordManager.reloadVersions( path );
                 notification.fire( new NotificationEvent( CommonConstants.INSTANCE.ItemSavedSuccessfully() ) );
                 setOriginalHash( newHash );
-                reload();
             }
         };
     }
