@@ -11,6 +11,8 @@ import org.uberfire.java.nio.base.version.VersionRecord;
  * Created on 05-10-2017.
  */
 class VersionHistoryUtil {
+    // A dot file revision has exactly two . chars (with other non-whitespace chars in between) after { and before }
+    private static RegExp dotFileRevision = RegExp.compile( "{\\/\\S[^.]+\\.\\S[^.]+\\.\\S[^.]+}" );
 
     /**
      * Removes the version records pertaining to modification of the uberfire metadata "dot" file from the input collection
@@ -21,14 +23,9 @@ class VersionHistoryUtil {
         Iterator<VersionRecord> iter = records.iterator();
         while ( iter.hasNext() ) {
             VersionRecord record = iter.next();
-            if ( record != null && record.comment() != null && record.comment().contains( "delete {" ) ) {
-                // potentiel match - make the more fine grained test:
-                // there must be exactly two . chars (with other non-whitespace chars in between) after { and before }
-                RegExp regExp = RegExp.compile( "{\\/\\S[^.]+\\.\\S[^.]+\\.\\S[^.]+}" );
-                MatchResult matcher = regExp.exec( record.comment() );
-                if ( matcher != null ) { //match found
-                    iter.remove(); //remove irrelevant version record
-                }
+            MatchResult matcher = dotFileRevision.exec( record.comment() );
+            if ( matcher != null ) { //match found
+                iter.remove(); //remove irrelevant version record
             }
         }
     }
