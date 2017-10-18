@@ -89,7 +89,7 @@ public class RenameServiceImplTest {
         doNothing().when( renameService ).endBatch();
 
         List<RenameRestrictor> renameRestrictors = new ArrayList<RenameRestrictor>();
-        renameRestrictors.add( lprRestrictor );
+//todo ttn fix        renameRestrictors.add( lprRestrictor );
         renameRestrictors.add( lockRestrictor );
         when( renameService.getRenameRestrictors() ).thenReturn( renameRestrictors );
     }
