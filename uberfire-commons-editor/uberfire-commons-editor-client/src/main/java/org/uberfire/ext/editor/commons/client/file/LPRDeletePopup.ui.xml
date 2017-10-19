@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+             xmlns:html="urn:import:org.gwtbootstrap3.client.ui.html">
+    <b:Container fluid="true">
+        <b:Row>
+            <b:Column size="MD_12">
+                <b:Label text="Advarsel" addStyleNames="label-warning"/>
+                <html:Paragraph ui:field="warningText"/>
+            </b:Column>
+        </b:Row>
+        <b:Row>
+            <b:Column size="MD_12">
+                <html:Paragraph/>
+                <html:Paragraph ui:field="confirmText"/>
+            </b:Column>
+        </b:Row>
+    </b:Container>
+</ui:UiBinder>

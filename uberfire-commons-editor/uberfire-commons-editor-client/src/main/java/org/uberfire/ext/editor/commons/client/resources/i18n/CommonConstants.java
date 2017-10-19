@@ -266,4 +266,16 @@ public interface CommonConstants
     String LPRArchivePopupWarning();
 
     String LPRArchivePopupConfirm();
+
+    String LPRDeletePopupDeleteWarning();
+
+    String LPRDeletePopupRestoreWarning();
+
+    String LPRDeletePopupConfirm();
+
+    String LPRDeletePopupDelete();
+
+    String LPRDeletePopupRestore();
+
+    String LPRDeletePopupTitle();
 }
