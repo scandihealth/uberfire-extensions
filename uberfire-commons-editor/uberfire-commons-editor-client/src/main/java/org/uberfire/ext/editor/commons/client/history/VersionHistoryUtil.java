@@ -19,7 +19,7 @@ class VersionHistoryUtil {
      * @param records the list to remove elements from
      */
     //NOTE: This method cannot be unit tested because the regular expression is javascript-specific
-    static void removeMetadataFileRevisions( List<VersionRecord> records ) {
+    static void removeDotFileRevisions( List<VersionRecord> records ) {
         Iterator<VersionRecord> iter = records.iterator();
         while ( iter.hasNext() ) {
             VersionRecord record = iter.next();

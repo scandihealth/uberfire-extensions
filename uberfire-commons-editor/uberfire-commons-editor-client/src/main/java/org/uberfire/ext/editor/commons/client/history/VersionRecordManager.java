@@ -251,7 +251,7 @@ public class VersionRecordManager {
         versionService.call( new RemoteCallback<List<VersionRecord>>() {
             @Override
             public void callback( List<VersionRecord> records ) {
-
+                VersionHistoryUtil.removeDotFileRevisions( records );
                 String uri = path.toURI();
 
                 // We should not recreate the path to latest,

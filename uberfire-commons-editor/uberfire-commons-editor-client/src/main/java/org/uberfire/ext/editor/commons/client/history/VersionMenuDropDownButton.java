@@ -56,7 +56,6 @@ public class VersionMenuDropDownButton
 
     public void setItems( List<VersionRecord> versions ) {
         if ( this.versions == null || ( versions.size() > this.versions.size() ) ) {
-            VersionHistoryUtil.removeMetadataFileRevisions( versions );
             this.versions = versions;
         }
         updateTitle();

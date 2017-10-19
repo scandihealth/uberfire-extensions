@@ -84,7 +84,7 @@ public class VersionHistoryPresenter
         return new RemoteCallback<List<VersionRecord>>() {
             @Override
             public void callback(List<VersionRecord> records) {
-                VersionHistoryUtil.removeMetadataFileRevisions( records );
+                VersionHistoryUtil.removeDotFileRevisions( records );
                 view.setup(version, dataProvider);
                 Collections.reverse( records );
                 VersionHistoryPresenter.this.records = records;
