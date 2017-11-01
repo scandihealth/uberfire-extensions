@@ -6,7 +6,6 @@
     <b:Container fluid="true">
         <b:Row>
             <b:Column size="MD_12">
-                <b:Label text="Advarsel" addStyleNames="label-warning"/>
                 <html:Paragraph ui:field="warningText"/>
             </b:Column>
         </b:Row>
