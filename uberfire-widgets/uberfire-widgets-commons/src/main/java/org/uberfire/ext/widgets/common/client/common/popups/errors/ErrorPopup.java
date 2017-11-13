@@ -43,7 +43,7 @@ public class ErrorPopup extends BaseModal {
 
     private static ErrorPopupWidgetBinder uiBinder = GWT.create( ErrorPopupWidgetBinder.class );
 
-    private static ErrorPopup instance = new ErrorPopup();
+    private static ErrorPopup instance;
 
     @UiField
     protected HTML message;
@@ -65,6 +65,8 @@ public class ErrorPopup extends BaseModal {
     }
 
     public static void showMessage( String message ) {
+        if ( instance == null )
+            instance = new ErrorPopup();
         instance.setMessage( message );
         instance.show();
     }
