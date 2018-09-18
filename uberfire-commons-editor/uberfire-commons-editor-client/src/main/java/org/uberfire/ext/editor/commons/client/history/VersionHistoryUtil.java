@@ -12,7 +12,7 @@ import org.uberfire.java.nio.base.version.VersionRecord;
  */
 class VersionHistoryUtil {
     // A dot file revision has exactly two . chars (with other non-whitespace chars in between) after { and before }
-    private static RegExp dotFileRevision = RegExp.compile( "{\\/\\S[^.]+\\.\\S[^.]+\\.\\S[^.]+}" );
+    private static RegExp dotFileRevision = RegExp.compile( "{\\/\\S[^.]+\\/\\.\\S+\\.\\S[^.]+}" );
 
     /**
      * Removes the version records pertaining to modification of the uberfire metadata "dot" file from the input collection
