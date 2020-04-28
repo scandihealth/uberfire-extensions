@@ -109,4 +109,9 @@ public class VersionHistoryPresenterViewImpl
     public void showLoading() {
         BusyPopup.showMessage( CommonConstants.INSTANCE.Loading() );
     }
+
+    @Override
+    public void hideLoading() {
+        BusyPopup.close();
+    }
 }
