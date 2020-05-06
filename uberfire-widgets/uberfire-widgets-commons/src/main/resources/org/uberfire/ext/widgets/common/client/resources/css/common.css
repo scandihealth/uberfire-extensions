@@ -167,6 +167,18 @@
     border-top: none;
 }
 
+@external .novborder;
+.novborder {
+    margin: none;
+    spacing: none;
+    border-top: none !important;
+    border-bottom: none !important;
+    overflow:visible !important;
+}
+.novborder div {
+    overflow:visible !important;
+}
+
 .dataGridRow:first-child td {
     border-top: none;
 }

@@ -20,20 +20,20 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.view.client.AsyncDataProvider;
 import org.uberfire.java.nio.base.version.VersionRecord;
 
-public interface VersionHistoryPresenterView
+public interface ExtendedVersionHistoryPresenterView
         extends IsWidget {
 
 
 
     interface Presenter {
 
-        void onSelect(VersionRecord record);
+        void onSelect(ExtendedVersionRecord record);
 
     }
 
     void refreshGrid();
 
-    void setup(String version, AsyncDataProvider<VersionRecord> dataProvider);
+    void setup(String version, AsyncDataProvider<ExtendedVersionRecord> dataProvider);
 
     void setPresenter(Presenter presenter);
 
