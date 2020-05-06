@@ -7,5 +7,6 @@ public interface ExtendedVersionRecord extends VersionRecord, Comparable<Extende
     String versionNumber();
     String name();
     String graphSlice();
+    boolean isCurrentRule();
     void setGraphSlice(String graph);
 }

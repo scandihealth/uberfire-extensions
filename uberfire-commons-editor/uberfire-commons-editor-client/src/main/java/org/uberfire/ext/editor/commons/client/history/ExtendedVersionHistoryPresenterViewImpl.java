@@ -25,6 +25,8 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.Range;
+import com.google.gwt.view.client.RowCountChangeEvent;
 import org.gwtbootstrap3.client.ui.gwt.ButtonCell;
 import org.uberfire.ext.editor.commons.client.resources.i18n.CommonConstants;
 import org.uberfire.ext.widgets.common.client.common.BusyPopup;
@@ -47,10 +49,23 @@ public class ExtendedVersionHistoryPresenterViewImpl
 
         table.getElement().setAttribute( "data-uf-lock", "false" );
 
+        table.addRowCountChangeHandler(new RowCountChangeEvent.Handler() {
+            @Override
+            public void onRowCountChange(RowCountChangeEvent event) {
+                table.setVisibleRange(new Range(0, event.getNewRowCount()));
+            }
+        });
+
         Column<ExtendedVersionRecord, String> columnButton = new Column<ExtendedVersionRecord, String>( new ButtonCell() ) {
+
+            @Override
+            public void render(Cell.Context context, ExtendedVersionRecord object, SafeHtmlBuilder sb) {
+                if (object.isCurrentRule()) super.render(context, object, sb);
+            }
+
             @Override
             public String getValue( ExtendedVersionRecord object ) {
-                if ( version.equals( object.id() ) ) {
+                if ( version.equals( object.id() ) && object.isCurrentRule() ) {
                     return CommonConstants.INSTANCE.Current();
                 } else {
                     return CommonConstants.INSTANCE.Select();
@@ -63,7 +78,7 @@ public class ExtendedVersionHistoryPresenterViewImpl
             public void update( int index,
                                 ExtendedVersionRecord record,
                                 String value ) {
-                presenter.onSelect( record ); //XXX need to be able to select not only different version but different rule / uri
+                presenter.onSelect( record );
             }
         } );
 
@@ -103,7 +118,7 @@ public class ExtendedVersionHistoryPresenterViewImpl
                 return x;
             }
         };
-        table.addColumn( columnGraph, "Historik" );
+        table.addColumn( columnGraph, CommonConstants.INSTANCE.History() );
 
         Column<ExtendedVersionRecord, String> columnName =
                 new Column<ExtendedVersionRecord, String>( new TextCell() ) {
@@ -112,7 +127,7 @@ public class ExtendedVersionHistoryPresenterViewImpl
                         return object.name();
                     }
                 };
-        table.addColumn( columnName, "Regel" );
+        table.addColumn( columnName, CommonConstants.INSTANCE.Rule() );
 
         Column<ExtendedVersionRecord, String> columnVersion = new Column<ExtendedVersionRecord, String>( new TextCell() ) {
             @Override
@@ -120,7 +135,7 @@ public class ExtendedVersionHistoryPresenterViewImpl
                 return object.versionNumber();
             }
         };
-        table.addColumn( columnVersion, "Version" );
+        table.addColumn( columnVersion, CommonConstants.INSTANCE.VersionNoParam() );
 
         Column<ExtendedVersionRecord, Date> columnDate = new Column<ExtendedVersionRecord, Date>( new DateCell() ) {
             @Override
@@ -180,10 +195,5 @@ public class ExtendedVersionHistoryPresenterViewImpl
     @Override
     public void showLoading() {
         BusyPopup.showMessage( CommonConstants.INSTANCE.Loading() );
-    }
-
-    @Override
-    public void hideLoading() {
-        BusyPopup.close();
     }
 }

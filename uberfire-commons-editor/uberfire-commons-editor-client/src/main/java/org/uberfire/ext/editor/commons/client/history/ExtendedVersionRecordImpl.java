@@ -13,6 +13,7 @@ public class ExtendedVersionRecordImpl implements ExtendedVersionRecord {
     private String _comment;
     private String _uri;
     private Date _date;
+    private boolean _isCurrentRule;
 
     public ExtendedVersionRecordImpl(
             String name,
@@ -23,7 +24,8 @@ public class ExtendedVersionRecordImpl implements ExtendedVersionRecord {
             String email,
             String comment,
             String uri,
-            Date date) {
+            Date date,
+            boolean isCurrentRule) {
         _name = name;
         _versionNumber = versionNumber;
         _graphSlice = graphSlice;
@@ -33,7 +35,11 @@ public class ExtendedVersionRecordImpl implements ExtendedVersionRecord {
         _comment = comment;
         _uri = uri;
         _date = date;
+        _isCurrentRule = isCurrentRule;
     }
+
+    @Override
+    public boolean isCurrentRule() { return _isCurrentRule; }
 
     @Override
     public void setGraphSlice(String graph) {
@@ -72,6 +78,9 @@ public class ExtendedVersionRecordImpl implements ExtendedVersionRecord {
         if (date() == null || o.date() == null) {
             return 0;
         }
-        return date().compareTo(o.date());
+        int v = date().compareTo(o.date());
+        if (v != 0) return v;
+        // If two versions for two different rules have identical time stamps (only happens when rules are edited and committed manually), we need a deterministic ordering, so fall back to rule name ordering
+        return name().compareTo(o.name());
     }
 }

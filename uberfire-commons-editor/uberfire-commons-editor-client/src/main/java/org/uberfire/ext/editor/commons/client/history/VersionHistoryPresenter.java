@@ -77,7 +77,6 @@ public class VersionHistoryPresenter
     }
 
     private void loadContent() {
-        view.showLoading();
         versionService.call(getRemoteCallback()).getVersions(path);
     }
 
@@ -91,7 +90,6 @@ public class VersionHistoryPresenter
                 VersionHistoryPresenter.this.records = records;
                 view.refreshGrid();
                 doOnCurrentVersionRefreshed( version );
-                view.hideLoading();
             }
         };
     }

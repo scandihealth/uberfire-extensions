@@ -38,5 +38,4 @@ public interface VersionHistoryPresenterView
     void setPresenter(Presenter presenter);
 
     void showLoading();
-    void hideLoading();
 }

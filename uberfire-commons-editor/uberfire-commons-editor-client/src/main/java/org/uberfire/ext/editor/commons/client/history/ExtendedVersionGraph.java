@@ -55,6 +55,12 @@ public class ExtendedVersionGraph {
         branches.put(name, branch);
     }
 
+    static int compareTo(Date d1, String n1, Date d2, String n2) {
+        int v = d1.compareTo(d2);
+        if (v != 0) return v;
+        return n1.compareTo(n2); // if dates are identical, use name as second sorting criteria to get deterministic ordering
+    }
+
     // To be called after all version records have been added, all branches have been registered, and
     // all records have been sorted by date.
     public void decorate(List<ExtendedVersionRecord> records) {
@@ -62,17 +68,21 @@ public class ExtendedVersionGraph {
             try {
                 Branch b = branches.get(r.name());
                 String graph = "<div style='position:relative; width:100%; height:28px; overflow:visible;'>"; // wrapper to fit table cell
+                int addStub = -1;
                 if (r.date().compareTo(b.firstDate) == 0 && branchHasAncestor(b)) {
                     // Add diagonal line to indicate that this branch is an offspring from ancestor on the left
                     graph += addDiagonal(b.offset, branches.size(), b.color);
+                    addStub = b.offset + 1; // Extend ancestor branch line just a tad to match up with diagonal
                 }
-                for (Branch t : branches.values()) {
+                for (String name: branches.keySet()) {
+                    Branch t = branches.get(name);
                     // For all branches, add vertical lines as long as they are ongoing (given the date for the current row/version)
-                    int first = t.firstDate.compareTo(r.date());
-                    int last = t.lastDate.compareTo(r.date());
+                    int first = compareTo(t.firstDate, name, r.date(), r.name());
+                    int last = compareTo(t.lastDate, name, r.date(), r.name());
                     if (first < 0 && last > 0) graph += addLine(t.offset, branches.size(), t.color);
                     else if (first < 0 && last == 0) graph += addUpper(t.offset, branches.size(), t.color);
                     else if (first == 0 && last > 0) graph += addLower(t.offset, branches.size(), t.color);
+                    else if (addStub == t.offset) graph += addUpper(t.offset, branches.size(), t.color);
                 }
                 // Add a circle to indicate the committed version belonging to this row
                 graph += addCircle(b.offset, branches.size(), b.color);

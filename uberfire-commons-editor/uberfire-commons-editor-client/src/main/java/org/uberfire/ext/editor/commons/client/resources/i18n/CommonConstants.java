@@ -278,4 +278,10 @@ public interface CommonConstants
     String LPRDeletePopupRestore();
 
     String LPRDeletePopupTitle();
+
+    String History();
+
+    String Rule();
+
+    String VersionNoParam();
 }

@@ -81,7 +81,6 @@ public class ExtendedVersionHistoryPresenter
     }
 
     private void loadContent() {
-        view.showLoading();
         records = new ArrayList<ExtendedVersionRecord>();
         fetchName = path.getFileName();
         versionGraph = new ExtendedVersionGraph();
@@ -94,6 +93,7 @@ public class ExtendedVersionHistoryPresenter
             public void callback(List<VersionRecord> fetchedRecords) {
                 VersionHistoryUtil.removeDotFileRevisions( fetchedRecords );
 
+                boolean isFirstBatch = (records.size() == 0);
                 // fetchedRecords from the version service are always sorted with first version first. Now convert each to an extended record
                 int versionCounter = 0;
                 for (VersionRecord r: fetchedRecords) {
@@ -107,7 +107,8 @@ public class ExtendedVersionHistoryPresenter
                             r.email(),
                             r.comment(),
                             r.uri(),
-                            r.date()
+                            r.date(),
+                            isFirstBatch
                     ));
                 }
 
@@ -146,15 +147,24 @@ public class ExtendedVersionHistoryPresenter
                 versionGraph.decorate(records);
 
                 view.setup(version, dataProvider);
+                if (records != null) {
+                    dataProvider.updateRowCount(records.size(), true);
+                    dataProvider.updateRowData(0, records);
+                }
                 view.refreshGrid();
                 doOnCurrentVersionRefreshed( version );
-                view.hideLoading();
             }
         };
     }
 
     @Override
-    public void onSelect(VersionRecord record) {
+    public void onSelect(ExtendedVersionRecord record) {
+        if (!record.isCurrentRule()) {
+            // TODO When selecting a version of a different rule/branch, we can't just switch version here,
+            // we need a full reload of the other rule into the editor - presumably something that hits the encapsulating BaseEditor
+            // similarly to restoreEvent.fire( new RestoreEvent( restoreUtil.createObservablePath( restored, currentVersionRecordUri ) ) );
+            return;
+        }
         if (!record.id().equals(version)) {
             view.showLoading();
             versionSelectedEvent.fire(
@@ -182,6 +192,10 @@ public class ExtendedVersionHistoryPresenter
     public void refresh(String version) {
         this.version = version;
         loadContent();
+    }
+
+    public void refresh() {
+        view.refreshGrid();
     }
 
     public void setOnCurrentVersionRefreshed( ParameterizedCommand<VersionRecord> onCurrentVersionRefreshed ) {

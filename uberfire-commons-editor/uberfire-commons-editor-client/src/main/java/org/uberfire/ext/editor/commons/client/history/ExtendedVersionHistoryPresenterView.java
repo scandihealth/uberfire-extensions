@@ -27,7 +27,7 @@ public interface ExtendedVersionHistoryPresenterView
 
     interface Presenter {
 
-        void onSelect(VersionRecord record);
+        void onSelect(ExtendedVersionRecord record);
 
     }
 
@@ -38,5 +38,4 @@ public interface ExtendedVersionHistoryPresenterView
     void setPresenter(Presenter presenter);
 
     void showLoading();
-    void hideLoading();
 }
