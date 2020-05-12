@@ -28,7 +28,7 @@
   </parent>
 
   <artifactId>uberfire-extensions</artifactId>
-  <version>${revision}</version>
+  <version>0.9.0.csc-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Extensions to UberFire</name>
@@ -36,8 +36,6 @@
   <properties>
     <!-- JDK8 needed to build the project (because of WildFly 10 integration), but Java 6 still support for backend -->
     <jdk.min.version>1.8</jdk.min.version>
-    <revision>0.9.0.csc${changelist}</revision>
-    <changelist>-SNAPSHOT</changelist>
   </properties>
 
   <modules>
