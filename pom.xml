@@ -24,11 +24,10 @@
     <groupId>org.uberfire</groupId>
     <artifactId>uberfire-parent-metadata</artifactId>
     <!-- Keep in sync with property <version.org.uberfire> declared in uberfire-extensions-deps -->
-    <version>0.9.0.Final</version>
+    <version>0.9.0.csc-SNAPSHOT</version>
   </parent>
 
   <artifactId>uberfire-extensions</artifactId>
-  <version>0.9.0.csc-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Extensions to UberFire</name>
