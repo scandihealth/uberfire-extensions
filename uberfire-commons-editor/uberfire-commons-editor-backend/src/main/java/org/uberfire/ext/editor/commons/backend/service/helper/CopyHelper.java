@@ -35,6 +35,7 @@ public interface CopyHelper {
      * @param destination Path Destination after copy
      */
     void postProcess( final Path source,
-                      final Path destination );
+                      final Path destination,
+                      final String comment );
 
 }

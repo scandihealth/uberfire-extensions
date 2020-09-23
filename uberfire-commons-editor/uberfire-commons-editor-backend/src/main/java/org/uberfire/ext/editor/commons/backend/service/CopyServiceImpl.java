@@ -151,7 +151,7 @@ public class CopyServiceImpl implements CopyService {
             for ( CopyHelper helper : helpers ) {
                 if ( helper.supports( targetPath ) ) {
                     helper.postProcess( path,
-                                        targetPath );
+                                        targetPath, comment );
                 }
             }
         } catch ( final Exception e ) {
@@ -197,7 +197,8 @@ public class CopyServiceImpl implements CopyService {
                 for ( CopyHelper helper : helpers ) {
                     if ( helper.supports( targetPath ) ) {
                         helper.postProcess( path,
-                                            targetPath );
+                                            targetPath,
+                                            comment );
                     }
                 }
             }
